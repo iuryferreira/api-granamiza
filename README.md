@@ -1,4 +1,4 @@
-# Granimiza+ - API.
+# Granimiza - API.
 
 (Grana + Economiza) é um aplicação de gerenciamento financeiro que visa auxiliar  o controle de todo o dinheiro gasto de forma prática, além de facilitar a organização das informações financeiras. 
 O Aplicativo Granamiza Atualmente conta com 2 módulos: *Receitas* e *Despesas*.
