@@ -1,10 +1,14 @@
 using System;
 
-public class Categoria
+namespace APIGranamiza.Models
 {
-    public int Id { get; set; }
-    public string Nome { get; set; }
-    public bool IsGasto { get; set; }
-    public int UsuarioId { get; set; }
-    public virtual Usuario Usuario { get; set; }
+    public class Categoria
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; }
+        public bool IsGasto { get; set; }
+        public int UsuarioId { get; set; }
+        public virtual Usuario Usuario { get; set; }
+    }
+
 }
