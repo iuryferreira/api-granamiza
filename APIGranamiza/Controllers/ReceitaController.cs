@@ -48,7 +48,7 @@ namespace APIGranamiza.Controllers
         }
 
         [HttpGet("total")]
-        public async Task<ActionResult<decimal>> GetSaldoAnual(int ano)
+        public async Task<ActionResult<decimal>> GetReceitaTotal(int ano)
         {
             return await context.Receita.
                 // [TAG - add referência de usuário] Receitas do usuario
