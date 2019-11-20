@@ -12,35 +12,21 @@ namespace APIGranamiza.Utils
 
     public static class Token
     {
-        public static string GerarToken(Usuario usuario)
+        public static string GerarToken(Usuario u)
         {
-            var chaveJson = Encoding.ASCII.GetBytes(Startup.StaticConfiguration["chaveJson"]);
-            var claims = new ClaimsIdentity( new Claim[]{
-                    new Claim(ClaimTypes.Name, usuario.Email)
-            });
-            var tempoExpiracao = DateTime.UtcNow.AddHours(2);
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            SymmetricSecurityKey chave = GerarChaveSimetrica();
-            SigningCredentials credenciais = CriarCredenciais(chave);
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor{
-                Subject = claims,
-                Expires = tempoExpiracao,
-                SigningCredentials = credenciais
+            var manipuladorToken = new JwtSecurityTokenHandler();
+            var chave = Encoding.ASCII.GetBytes(Startup.StaticConfiguration["chaveJson"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, u.Email),
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(chave), SecurityAlgorithms.HmacSha256Signature)
             };
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
-        }
-
-        private static SigningCredentials CriarCredenciais(SymmetricSecurityKey chave)
-        {
-            return new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
-        }
-
-        private static SymmetricSecurityKey GerarChaveSimetrica()
-        {
-            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Startup.StaticConfiguration.GetValue("chaveJson", "")));
+            var token = manipuladorToken.CreateToken(tokenDescriptor);
+            return manipuladorToken.WriteToken(token);
         }
     }
 }
