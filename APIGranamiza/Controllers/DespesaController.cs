@@ -56,7 +56,7 @@ namespace APIGranamiza.Controllers
             despesa.DataCriacao = DateTime.Now;
             contexto.Despesa.Add(despesa);
             await contexto.SaveChangesAsync().ConfigureAwait(false);
-            return CreatedAtAction("GetDespesa", new { usuarioId = despesa.UsuarioId, id = despesa.Id }, despesa);
+            return CreatedAtAction("GetDespesa", new {id = despesa.Id }, despesa);
         }
 
         [Authorize]
