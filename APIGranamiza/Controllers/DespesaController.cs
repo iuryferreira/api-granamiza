@@ -27,8 +27,9 @@ namespace APIGranamiza.Controllers
         public async Task<ActionResult<IEnumerable<Despesa>>> GetAll(int usuarioId)
         {
             return await contexto.Despesa.
+            Include(d => d.Categoria).
             Where(d => d.DataRemocao == null && d.UsuarioId == usuarioId)
-            .ToListAsync();
+            .ToListAsync().ConfigureAwait(false);
         }
 
 
@@ -37,6 +38,7 @@ namespace APIGranamiza.Controllers
         public async Task<ActionResult<Despesa>> GetDespesa(int id)
         {
             var despesa = await contexto.Despesa.
+            Include(d => d.Categoria).
             Where(d => d.DataRemocao == null && d.Id == id).FirstOrDefaultAsync();
 
             if (despesa != null)
