@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using APIGranamiza.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,24 +21,24 @@ namespace APIGranamiza.Controllers
             this.context = context;
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Receita>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Receita>>> GetAll(int usuarioId)
         {
             return await context.Receita.
-                // [TAG - add referência de usuário] Receitas do usuario
-                 Where(r => r.DataRemocao == null /* && r.UsuarioId == 1*/).
-                 ToListAsync().ConfigureAwait(false);
+                Include(r => r.Categoria).
+                Where(r => r.DataRemocao == null && r.UsuarioId == usuarioId).
+                ToListAsync();
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Receita>> GetReceita(int id)
         {
             Receita receita = await context.Receita.
-                // [TAG - add referência de usuário] Receita do usuario
-                Include(r => r.Usuario).
-                Where(r => r.Id == id).
-                FirstOrDefaultAsync().
-                ConfigureAwait(false);
+                Include(r => r.Categoria).
+                Where(r => r.DataRemocao == null && r.Id == id).
+                FirstOrDefaultAsync();
 
             if (receita != null)
             {
@@ -47,35 +48,36 @@ namespace APIGranamiza.Controllers
             return NotFound();
         }
 
-        [HttpGet("total")]
-        public async Task<ActionResult<decimal>> GetReceitaTotal(int ano)
+        [Authorize]
+        [HttpGet("total-receitas")]
+        public async Task<ActionResult<decimal>> GetReceitaTotal(int usuarioId)
         {
             return await context.Receita.
-                // [TAG - add referência de usuário] Receitas do usuario
-                Where(r => r.UsuarioId == 1).
-                SumAsync(r => r.Valor).ConfigureAwait(false);
+                Where(r => r.DataRemocao == null && r.UsuarioId == usuarioId).
+                SumAsync(r => r.Valor);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Receita>> Adicionar(Receita receita)
         {
             receita.DataCriacao = DateTime.Now;
             context.Receita.Add(receita);
-            await context.SaveChangesAsync().ConfigureAwait(false);
+            await context.SaveChangesAsync();
             return CreatedAtAction("GetReceita", new { id = receita.Id }, receita);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<Receita>> Atualizar(int id, Receita receita)
         {
             if (id == receita.Id)
             {
-                //receita.AtualizadoEm = DateTime.Now;
                 context.Entry(receita).State = EntityState.Modified;
 
                 try
                 {
-                    await context.SaveChangesAsync().ConfigureAwait(false);
+                    await context.SaveChangesAsync();
                 }
 
                 catch (DbUpdateConcurrencyException)
@@ -84,7 +86,6 @@ namespace APIGranamiza.Controllers
                     {
                         return NotFound();
                     }
-
                     else
                     {
                         throw;
@@ -97,6 +98,7 @@ namespace APIGranamiza.Controllers
             return BadRequest();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Receita>> Remover(int id)
         {
@@ -104,7 +106,7 @@ namespace APIGranamiza.Controllers
             if (receita != null)
             {
                 receita.DataRemocao = DateTime.Now;
-                await context.SaveChangesAsync().ConfigureAwait(false);
+                await context.SaveChangesAsync();
                 return receita;
             }
             return NotFound();
