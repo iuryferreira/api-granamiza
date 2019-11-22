@@ -24,7 +24,7 @@ namespace APIGranamiza.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetAll()
         {
-            return await contexto.Usuario.ToListAsync().ConfigureAwait(false);
+            return await contexto.Usuario.ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -50,7 +50,7 @@ namespace APIGranamiza.Controllers
             usuario.Senha = Crypter.Sha256.Crypt(usuario.Senha);
             usuario.DataCriacao = DateTime.Now;
             contexto.Usuario.Add(usuario);
-            await contexto.SaveChangesAsync().ConfigureAwait(false);
+            await contexto.SaveChangesAsync();
             return CreatedAtAction("GetUsuario", new { id = usuario.Id }, usuario);
         }
 
@@ -87,7 +87,7 @@ namespace APIGranamiza.Controllers
                 contexto.Entry(usuario).State = EntityState.Modified;
                 try
                 {
-                    await contexto.SaveChangesAsync().ConfigureAwait(false);
+                    await contexto.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -111,7 +111,7 @@ namespace APIGranamiza.Controllers
             Usuario usuario = await contexto.Usuario.FindAsync(id);
             if (usuario != null)
             {
-                await contexto.SaveChangesAsync().ConfigureAwait(false);
+                await contexto.SaveChangesAsync();
                 return usuario;
             }
             return NotFound();

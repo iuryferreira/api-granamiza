@@ -29,7 +29,7 @@ namespace APIGranamiza.Controllers
             return await contexto.Despesa.
             Include(d => d.Categoria).
             Where(d => d.DataRemocao == null && d.UsuarioId == usuarioId)
-            .ToListAsync().ConfigureAwait(false);
+            .ToListAsync();
         }
 
 
@@ -52,23 +52,23 @@ namespace APIGranamiza.Controllers
         }
         [Authorize]
         [HttpGet("total-despesas")]
-        public async Task<ActionResult<decimal>> GetSaldoDespesas(int usuarioId)
+        public async Task<ActionResult<decimal>> GetTotalDespesas(int usuarioId)
         {
             return await contexto.Despesa.
                 Where(d => d.DataRemocao == null &&
                 d.Debitada == false && 
                 d.UsuarioId == usuarioId).
-                SumAsync(d => d.Valor).ConfigureAwait(false);
+                SumAsync(d => d.Valor);
         }
         [Authorize]
         [HttpGet("total-despesas-pagas")]
-        public async Task<ActionResult<decimal>> GetSaldoDespesasPagas(int usuarioId)
+        public async Task<ActionResult<decimal>> GetTotalDespesasPagas(int usuarioId)
         {
             return await contexto.Despesa.
                 Where(d => d.DataRemocao == null &&
                 d.Debitada == true && 
                 d.UsuarioId == usuarioId).
-                SumAsync(d => d.Valor).ConfigureAwait(false);
+                SumAsync(d => d.Valor);
         }
         [Authorize]
         [HttpPost]
@@ -76,7 +76,7 @@ namespace APIGranamiza.Controllers
         {
             despesa.DataCriacao = DateTime.Now;
             contexto.Despesa.Add(despesa);
-            await contexto.SaveChangesAsync().ConfigureAwait(false);
+            await contexto.SaveChangesAsync();
             return CreatedAtAction("GetDespesa", new { id = despesa.Id }, despesa);
         }
         [Authorize]
@@ -88,7 +88,7 @@ namespace APIGranamiza.Controllers
                 contexto.Entry(despesa).State = EntityState.Modified;
                 try
                 {
-                    await contexto.SaveChangesAsync().ConfigureAwait(false);
+                    await contexto.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -114,7 +114,7 @@ namespace APIGranamiza.Controllers
             if (despesa != null)
             {
                 despesa.DataRemocao = DateTime.Now;
-                await contexto.SaveChangesAsync().ConfigureAwait(false);
+                await contexto.SaveChangesAsync();
                 return despesa;
             }
             return NotFound();
