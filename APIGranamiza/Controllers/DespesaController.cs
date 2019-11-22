@@ -16,10 +16,13 @@ namespace APIGranamiza.Controllers
     {
 
         private readonly Contexto contexto;
+        private readonly ICategoriaAdapter categoriaAdapter;
 
-        public DespesaController(Contexto contexto)
+        public DespesaController(Contexto contexto, CategoriaDespesaAdapter categoriaDespesaAdapter)
         {
             this.contexto = contexto;
+            this.categoriaAdapter =  new CategoriaDespesaAdapter();
+
         }
 
         [Authorize]
@@ -31,8 +34,6 @@ namespace APIGranamiza.Controllers
             Where(d => d.DataRemocao == null && d.UsuarioId == usuarioId)
             .ToListAsync();
         }
-
-
         [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Despesa>> GetDespesa(int id)
@@ -74,6 +75,8 @@ namespace APIGranamiza.Controllers
         [HttpPost]
         public async Task<ActionResult<Despesa>> Adicionar(Despesa despesa)
         {
+            var categoria = categoriaAdapter.Adicionar(despesa.Categoria);
+            despesa.Categoria = categoria;
             despesa.DataCriacao = DateTime.Now;
             contexto.Despesa.Add(despesa);
             await contexto.SaveChangesAsync();
@@ -81,7 +84,7 @@ namespace APIGranamiza.Controllers
         }
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<ActionResult<Usuario>> Atualizar(int id, Despesa despesa)
+        public async Task<ActionResult<Despesa>> Atualizar(int id, Despesa despesa)
         {
             if (id == despesa.Id)
             {
@@ -102,6 +105,19 @@ namespace APIGranamiza.Controllers
                     }
                 }
                 return NoContent();
+            }
+            return BadRequest();
+        }
+
+        [Authorize]
+        [HttpPatch("pagar")]
+        public async Task<ActionResult<Despesa>> Pagar(int id){
+
+            var despesa = await contexto.Despesa.FindAsync(id);
+            if(despesa != null){
+
+                despesa.Debitada = true;
+                await contexto.SaveChangesAsync();
             }
             return BadRequest();
         }
