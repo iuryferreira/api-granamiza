@@ -46,7 +46,7 @@ namespace APIGranamiza.Controllers
         [HttpPost]
         public async Task<ActionResult<Usuario>> Adicionar(Usuario usuario)
         {
-
+            AdicionarCategoriasPadrao(usuario);
             usuario.Senha = Crypter.Sha256.Crypt(usuario.Senha);
             usuario.DataCriacao = DateTime.Now;
             contexto.Usuario.Add(usuario);
@@ -57,15 +57,11 @@ namespace APIGranamiza.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UsuarioAutenticado>> Autenticar(Login login)
         {
-
             var usuario = await contexto.Usuario.Where(u => u.Email == login.Email).FirstOrDefaultAsync();
-
             if (usuario != null)
             {
-
                 if (Crypter.CheckPassword(login.Senha, usuario.Senha))
                 {
-
                     return new UsuarioAutenticado
                     {
                         Id = usuario.Id,
@@ -119,6 +115,13 @@ namespace APIGranamiza.Controllers
         private bool UsuarioExiste(int id)
         {
             return contexto.Usuario.Any(u => u.Id == id);
+        }
+        private void AdicionarCategoriasPadrao(Usuario usuario)
+        {
+            var categoriaReceita = new Categoria { Nome = "Geral", IsGasto = false, UsuarioId = usuario.Id, Usuario = usuario };
+            var categoriaDespesa = new Categoria { Nome = "Geral", IsGasto = true, UsuarioId = usuario.Id, Usuario = usuario };
+            contexto.Categoria.Add(categoriaDespesa);
+            contexto.Categoria.Add(categoriaReceita);
         }
     }
 
