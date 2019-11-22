@@ -50,7 +50,26 @@ namespace APIGranamiza.Controllers
                 return NotFound();
             }
         }
-
+        [Authorize]
+        [HttpGet("total-despesas")]
+        public async Task<ActionResult<decimal>> GetSaldoDespesas(int usuarioId)
+        {
+            return await contexto.Despesa.
+                Where(d => d.DataRemocao == null &&
+                d.Debitada == false && 
+                d.UsuarioId == usuarioId).
+                SumAsync(d => d.Valor).ConfigureAwait(false);
+        }
+        [Authorize]
+        [HttpGet("total-despesas-pagas")]
+        public async Task<ActionResult<decimal>> GetSaldoDespesasPagas(int usuarioId)
+        {
+            return await contexto.Despesa.
+                Where(d => d.DataRemocao == null &&
+                d.Debitada == true && 
+                d.UsuarioId == usuarioId).
+                SumAsync(d => d.Valor).ConfigureAwait(false);
+        }
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<Despesa>> Adicionar(Despesa despesa)
@@ -58,9 +77,8 @@ namespace APIGranamiza.Controllers
             despesa.DataCriacao = DateTime.Now;
             contexto.Despesa.Add(despesa);
             await contexto.SaveChangesAsync().ConfigureAwait(false);
-            return CreatedAtAction("GetDespesa", new {id = despesa.Id }, despesa);
+            return CreatedAtAction("GetDespesa", new { id = despesa.Id }, despesa);
         }
-
         [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult<Usuario>> Atualizar(int id, Despesa despesa)
@@ -87,7 +105,7 @@ namespace APIGranamiza.Controllers
             }
             return BadRequest();
         }
-        
+
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<ActionResult<Despesa>> Remover(int id)
