@@ -6,6 +6,7 @@ using APIGranamiza.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using APIGranamiza.Utils;
 
 namespace APIGranamiza.Controllers
 {
@@ -31,8 +32,6 @@ namespace APIGranamiza.Controllers
             Where(d => d.DataRemocao == null && d.UsuarioId == usuarioId)
             .ToListAsync();
         }
-
-
         [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<Despesa>> GetDespesa(int id)
@@ -74,6 +73,11 @@ namespace APIGranamiza.Controllers
         [HttpPost]
         public async Task<ActionResult<Despesa>> Adicionar(Despesa despesa)
         {
+            if (despesa.CategoriaId == null)
+            {
+                int categoriaId = CategoriaUtils.AdicionarCategoria(despesa.Categoria);
+                despesa.CategoriaId = categoriaId;
+            }
             despesa.DataCriacao = DateTime.Now;
             contexto.Despesa.Add(despesa);
             await contexto.SaveChangesAsync();
@@ -81,7 +85,7 @@ namespace APIGranamiza.Controllers
         }
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<ActionResult<Usuario>> Atualizar(int id, Despesa despesa)
+        public async Task<ActionResult<Despesa>> Atualizar(int id, Despesa despesa)
         {
             if (id == despesa.Id)
             {
@@ -102,6 +106,19 @@ namespace APIGranamiza.Controllers
                     }
                 }
                 return NoContent();
+            }
+            return BadRequest();
+        }
+
+        [Authorize]
+        [HttpPatch("pagar")]
+        public async Task<ActionResult<Despesa>> Pagar(int id){
+
+            var despesa = await contexto.Despesa.FindAsync(id);
+            if(despesa != null){
+
+                despesa.Debitada = true;
+                await contexto.SaveChangesAsync();
             }
             return BadRequest();
         }
