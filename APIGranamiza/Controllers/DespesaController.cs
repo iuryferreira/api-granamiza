@@ -6,6 +6,7 @@ using APIGranamiza.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using APIGranamiza.Utils;
 
 namespace APIGranamiza.Controllers
 {
@@ -16,13 +17,10 @@ namespace APIGranamiza.Controllers
     {
 
         private readonly Contexto contexto;
-        private readonly ICategoriaAdapter categoriaAdapter;
 
-        public DespesaController(Contexto contexto, CategoriaDespesaAdapter categoriaDespesaAdapter)
+        public DespesaController(Contexto contexto)
         {
             this.contexto = contexto;
-            this.categoriaAdapter =  new CategoriaDespesaAdapter();
-
         }
 
         [Authorize]
@@ -75,8 +73,11 @@ namespace APIGranamiza.Controllers
         [HttpPost]
         public async Task<ActionResult<Despesa>> Adicionar(Despesa despesa)
         {
-            var categoria = categoriaAdapter.Adicionar(despesa.Categoria);
-            despesa.Categoria = categoria;
+            if (despesa.CategoriaId == null)
+            {
+                int categoriaId = CategoriaUtils.AdicionarCategoria(despesa.Categoria);
+                despesa.CategoriaId = categoriaId;
+            }
             despesa.DataCriacao = DateTime.Now;
             contexto.Despesa.Add(despesa);
             await contexto.SaveChangesAsync();
