@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using APIGranamiza.Models;
+using APIGranamiza.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,7 +57,7 @@ namespace APIGranamiza.Controllers
         {
             return await contexto.Despesa.
                 Where(d => d.DataRemocao == null &&
-                d.Debitada == false && 
+                d.Debitada == false &&
                 d.UsuarioId == usuarioId).
                 SumAsync(d => d.Valor);
         }
@@ -66,7 +67,7 @@ namespace APIGranamiza.Controllers
         {
             return await contexto.Despesa.
                 Where(d => d.DataRemocao == null &&
-                d.Debitada == true && 
+                d.Debitada == true &&
                 d.UsuarioId == usuarioId).
                 SumAsync(d => d.Valor);
         }
@@ -74,6 +75,11 @@ namespace APIGranamiza.Controllers
         [HttpPost]
         public async Task<ActionResult<Despesa>> Adicionar(Despesa despesa)
         {
+            if (despesa.CategoriaId == null)
+            {
+                int categoriaId = CategoriaUtils.AdicionarCategoria(despesa.Categoria);
+                despesa.CategoriaId = categoriaId;
+            }
             despesa.DataCriacao = DateTime.Now;
             contexto.Despesa.Add(despesa);
             await contexto.SaveChangesAsync();
