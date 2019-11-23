@@ -30,9 +30,7 @@ namespace APIGranamiza.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
-
             var usuario = await contexto.Usuario.FindAsync(id);
-
             if (usuario != null)
             {
                 return usuario;
@@ -46,7 +44,6 @@ namespace APIGranamiza.Controllers
         [HttpPost]
         public async Task<ActionResult<Usuario>> Adicionar(Usuario usuario)
         {
-
             usuario.Senha = Crypter.Sha256.Crypt(usuario.Senha);
             usuario.DataCriacao = DateTime.Now;
             contexto.Usuario.Add(usuario);
@@ -57,15 +54,11 @@ namespace APIGranamiza.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UsuarioAutenticado>> Autenticar(Login login)
         {
-
             var usuario = await contexto.Usuario.Where(u => u.Email == login.Email).FirstOrDefaultAsync();
-
             if (usuario != null)
             {
-
                 if (Crypter.CheckPassword(login.Senha, usuario.Senha))
                 {
-
                     return new UsuarioAutenticado
                     {
                         Id = usuario.Id,

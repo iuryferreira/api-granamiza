@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using APIGranamiza.Models;
+using APIGranamiza.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -61,6 +62,11 @@ namespace APIGranamiza.Controllers
         [HttpPost]
         public async Task<ActionResult<Receita>> Adicionar(Receita receita)
         {
+            if (receita.CategoriaId == null)
+            {
+                int categoriaId = CategoriaUtils.AdicionarCategoria(receita.Categoria);
+                receita.CategoriaId = categoriaId;
+            }
             receita.DataCriacao = DateTime.Now;
             context.Receita.Add(receita);
             await context.SaveChangesAsync();
