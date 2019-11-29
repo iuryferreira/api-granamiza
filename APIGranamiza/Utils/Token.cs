@@ -15,7 +15,7 @@ namespace APIGranamiza.Utils
         public static string GerarToken(Usuario u)
         {
             var manipuladorToken = new JwtSecurityTokenHandler();
-            var chave = Encoding.ASCII.GetBytes(Startup.StaticConfiguration["chaveJson"]);
+            var chave = Encoding.ASCII.GetBytes("3li1bi47mç4m5o3m2on123h12j32131hbn123b1iub32u1i");
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]

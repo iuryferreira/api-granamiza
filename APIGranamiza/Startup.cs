@@ -33,7 +33,7 @@ namespace APIGranamiza
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<Contexto>(options => options.UseMySql(Configuration["conexao"]));
+            services.AddDbContext<Contexto>(options => options.UseMySql("server=localhost;user=root;password=abc@123;database=granamizadb"));
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -43,7 +43,7 @@ namespace APIGranamiza
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["chaveJson"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("3li1bi47mç4m5o3m2on123h12j32131hbn123b1iub32u1i")),
                     ValidateIssuer = false,
                     ValidateAudience = false 
                     };
