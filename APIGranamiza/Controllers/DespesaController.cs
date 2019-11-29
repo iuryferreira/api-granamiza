@@ -26,7 +26,7 @@ namespace APIGranamiza.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Despesa>>> GetAll(int usuarioId)
+        public async Task<ActionResult<IEnumerable<Despesa>>> GetAll([FromBody]int usuarioId)
         {
             return await contexto.Despesa.
             Include(d => d.Categoria).

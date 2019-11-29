@@ -20,20 +20,23 @@ namespace APIGranamiza.Controllers{
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetAll(){
-            return await contexto.Categoria.ToListAsync();
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetAll([FromBody] int usuarioId){
+            
+            return await contexto.Categoria.Where(c => c.UsuarioId == usuarioId).ToListAsync();
         }
 
         [Authorize]
         [HttpGet("receita")]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetAllReceita(){
-            return await contexto.Categoria.Where(c => c.IsGasto == false).ToListAsync();
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetAllReceita([FromBody] int usuarioId)
+        {
+            return await contexto.Categoria.Where(c => c.IsGasto == false && c.UsuarioId == usuarioId).ToListAsync();
         }
         
         [Authorize]
         [HttpGet("despesa")]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetAllDespesa(){
-            return await contexto.Categoria.Where(c => c.IsGasto == true).ToListAsync();
+        public async Task<ActionResult<IEnumerable<Categoria>>> GetAllDespesa([FromBody] int usuarioId)
+        {
+            return await contexto.Categoria.Where(c => c.IsGasto == true && c.UsuarioId == usuarioId).ToListAsync();
         }
     }
 }
