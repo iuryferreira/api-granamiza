@@ -14,7 +14,7 @@ using Pomelo.EntityFrameworkCore.MySql;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 
 namespace APIGranamiza
 {
@@ -38,17 +38,20 @@ namespace APIGranamiza
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x => {
+            }).AddJwtBearer(x =>
+            {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters {
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("3li1bi47mç4m5o3m2on123h12j32131hbn123b1iub32u1i")),
                     ValidateIssuer = false,
-                    ValidateAudience = false 
-                    };
-                });
-        }
+                    ValidateAudience = false
+                };
+            });
+
+      }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -62,7 +65,7 @@ namespace APIGranamiza
             app.UseRouting();
 
             app.UseAuthentication();
-            
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

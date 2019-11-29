@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using APIGranamiza.Utils;
+using Newtonsoft.Json.Linq;
 
 namespace APIGranamiza.Controllers
 {
@@ -25,13 +26,13 @@ namespace APIGranamiza.Controllers
         }
 
         [Authorize]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Despesa>>> GetAll([FromBody]int usuarioId)
+        [HttpPost("buscar")]
+        public async Task<ActionResult<IEnumerable<Despesa>>> GetAll([FromBody]UsuarioId usuarioId)
         {
             return await contexto.Despesa.
-            Include(d => d.Categoria).
-            Where(d => d.DataRemocao == null && d.UsuarioId == usuarioId)
-            .ToListAsync();
+                Include(r => r.Categoria).
+                Where(r => r.DataRemocao == null && r.UsuarioId == usuarioId.Id).
+                ToListAsync();
         }
         [Authorize]
         [HttpGet("{id}")]
