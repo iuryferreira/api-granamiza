@@ -51,11 +51,11 @@ namespace APIGranamiza.Controllers
         }
 
         [Authorize]
-        [HttpGet("total-receitas")]
-        public async Task<ActionResult<decimal>> GetReceitaTotal(int usuarioId)
+        [HttpPost("total-receitas")]
+        public async Task<ActionResult<decimal>> GetReceitaTotal([FromBody]UsuarioId usuarioId)
         {
             return await context.Receita.
-                Where(r => r.DataRemocao == null && r.UsuarioId == usuarioId).
+                Where(r => r.DataRemocao == null && r.UsuarioId == usuarioId.Id).
                 SumAsync(r => r.Valor);
         }
 

@@ -52,13 +52,13 @@ namespace APIGranamiza.Controllers
             }
         }
         [Authorize]
-        [HttpGet("total-despesas")]
-        public async Task<ActionResult<decimal>> GetTotalDespesas(int usuarioId)
+        [HttpPost("total-despesas")]
+        public async Task<ActionResult<decimal>> GetTotalDespesas([FromBody]UsuarioId usuarioId)
         {
             return await contexto.Despesa.
                 Where(d => d.DataRemocao == null &&
                 d.Debitada == false &&
-                d.UsuarioId == usuarioId).
+                d.UsuarioId == usuarioId.Id).
                 SumAsync(d => d.Valor);
         }
         [Authorize]
